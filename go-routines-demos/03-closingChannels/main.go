@@ -3,8 +3,8 @@ package main
 import "fmt"
 
 func myfunc(channel chan string){
-	for i:=0;i<4;i++{
-		channel <- "Go Lang is Awesome"
+	for i:=0;i<7;i++{
+		channel <- "Go Lang is Awesome "
 	}
 	fmt.Println("Lengh of the channel is", len(channel))
 	close(channel)
@@ -14,9 +14,11 @@ func main (){
 	go myfunc(c)
 	//my func is acting as the data publisher
 	fmt.Println("Capacity of the channel is", cap(c))
+	counter:=0
 	for {
 		res, ok  := <-c
-		if !ok{
+		counter++
+		if !ok {
 			fmt.Println("Channel is closed", ok)
 			break
 		}
