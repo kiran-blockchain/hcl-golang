@@ -1,0 +1,8 @@
+The context of out problem is a shipping warehouse. 
+Items are sent from the shelves to a conveyor belt. 
+An employee packs the items and places them on an outbound conveyor belt to be shipped.
+It’s important here to note that we’ll have one item per box and that some items may
+require extra handling to package than others.
+
+Solution #1 : using the regular pipelines
+Solution #2 : using fan-in and fanout 
