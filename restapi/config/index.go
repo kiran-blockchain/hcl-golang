@@ -8,7 +8,7 @@ import (
 )
 
 func SetupPort()string {
-	err:= godotenv.Load()
+	err:= godotenv.Load()//loads .env file in to the project environment
 	 if err!=nil{
 		 fmt.Println(err)
 		 fmt.Println("unable to load envoriment")
