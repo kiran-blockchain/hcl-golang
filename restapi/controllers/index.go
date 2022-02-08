@@ -11,6 +11,7 @@ import (
 
 	//"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -30,6 +31,36 @@ func GetProducts(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	//response := responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": users}}
 	json.NewEncoder(w).Encode(products)
+}
+
+func InsertProduct(w http.ResponseWriter, r *http.Request) {
+	var product models.Product
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := models.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		json.NewEncoder(w).Encode(response)
+		return
+	} else {
+		fmt.Println(product)
+		err := insertProduct(config.DB, "products", product)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			response := models.UserResponse{Status: http.StatusOK,
+				Message: "Unable to Save the data",
+				Data:    map[string]interface{}{"data": err}}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		//stroe the data to the database
+		w.WriteHeader(http.StatusOK)
+		response := models.UserResponse{Status: http.StatusOK,
+			Message: "Saved Successfuly",
+			Data:    map[string]interface{}{"data": ""}}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
 }
 
 func getProducts(client *mongo.Client, collectionName string) []models.Product {
@@ -65,4 +96,25 @@ func getProducts(client *mongo.Client, collectionName string) []models.Product {
 	fmt.Println(products)
 
 	return products
+}
+
+func insertProduct(client *mongo.Client, collectionName string, product models.Product) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//incase of timeout or error  cancel the context
+	defer cancel()
+	produtToInsert := models.Product{
+		Id:          primitive.NewObjectID(),
+		Name:        product.Name,
+		Title:       product.Title,
+		Description: product.Description,
+		Price:       product.Price,
+		Qty:         product.Qty,
+	}
+	result, err := productCollection.InsertOne(ctx, produtToInsert)
+	if err != nil {
+		return err
+	}
+	fmt.Println(result.InsertedID)
+	return nil
+
 }
