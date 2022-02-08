@@ -12,8 +12,8 @@ func Routes(router *mux.Router) {
 	// router.HandleFunc("/user/{userId}", controllers.EditAUser()).Methods("PUT")
 	// router.HandleFunc("/user/{userId}", controllers.DeleteAUser()).Methods("DELETE")
 	/* params
-	  route url  /users
-	  route handler  controller.GetUsers
+	route url  /users
+	route handler  controller.GetUsers
 	*/
-	router.HandleFunc("/users", controllers.GetUsers).Methods("GET")
+	router.HandleFunc("/api/getProducts", controllers.GetProducts).Methods("GET")
 }

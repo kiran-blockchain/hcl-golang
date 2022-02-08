@@ -1,21 +1,68 @@
 package controllers
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"multifileapp/config"
 	"multifileapp/models"
 	"net/http"
+	"time"
+
+	//"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	users := []models.User{
-		//user := models.User
-		{Id: "1", Name: "Kiran", Location: "Hyd", Title: "Trainer"},
-		{Id: "2", Name: "Sanjeev", Location: "Everywhere", Title: "Everything"},
-	}
+//var employeeCollection *mongo.Collection = config.GetCollection(config.DB, "employees")
+var productCollection *mongo.Collection = config.GetCollection(config.DB, "products")
 
+func GetProducts(w http.ResponseWriter, r *http.Request) {
+
+	// users := []models.User{
+	// 	//user := models.User
+	// 	{Id: "1", Name: "Kiran", Location: "Hyd", Title: "Trainer"},
+	// 	{Id: "2", Name: "Sanjeev", Location: "Everywhere", Title: "Everything"},
+	// }
+	products := getProducts(config.DB, "products")
 	fmt.Println("came here")
 	//vars := mux.Vars(r)
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
+	//response := responses.UserResponse{Status: http.StatusOK, Message: "success", Data: map[string]interface{}{"data": users}}
+	json.NewEncoder(w).Encode(products)
+}
+
+func getProducts(client *mongo.Client, collectionName string) []models.Product {
+	//Create the context for fetching the data
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//incase of timeout or error  cancel the context
+	defer cancel()
+	//Variable for the list of products
+	var products []models.Product
+	//var employees []models.Employee
+	//Get the data from the product db collection name
+	productCollection = client.Database("productdb").Collection(collectionName)
+	//employeeCollection := client.Database("productdb").Collection(collectionName)
+	//Fetch the array of searched items
+	results, err := productCollection.Find(ctx, bson.M{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(results)
+	//close the context incase of error
+	defer results.Close(ctx)
+	//loop through the result set and convert into the the product strucutre
+	for results.Next(ctx) {
+		var product models.Product
+		//Decode the results
+		if err = results.Decode(&product); err != nil {
+			fmt.Println(err)
+		}
+		//append the product to the products collection.
+		products = append(products, product)
+		//employees = append(employees, employee)
+	}
+	fmt.Println(products)
+
+	return products
 }
