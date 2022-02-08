@@ -3,9 +3,13 @@ package main
 import (
 	// "fmt"
 	// "log"
+	"context"
 	"fmt"
 	"multifileapp/config"
+	"multifileapp/models"
+	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	// "multifileapp/routes"
 	// "net/http"
@@ -30,6 +34,24 @@ func checkDBConnection() {
 	fmt.Println(myCollection)
 }
 func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
-	collection := client.Database("productdb").Collection(collectionName)
-	return collection
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	var products []models.Product
+	productCollection := client.Database("productdb").Collection(collectionName)
+	results, err := productCollection.Find(ctx, bson.M{})
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(results)
+	defer results.Close(ctx)
+	for results.Next(ctx) {
+		var product models.Product
+		if err = results.Decode(&product); err != nil {
+			fmt.Println(err)
+		}
+		products = append(products, product)
+	}
+	fmt.Println(products)
+
+	return productCollection
 }
