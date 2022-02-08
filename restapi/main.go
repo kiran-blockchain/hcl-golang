@@ -3,7 +3,10 @@ package main
 import (
 	// "fmt"
 	// "log"
+	"fmt"
 	"multifileapp/config"
+
+	"go.mongodb.org/mongo-driver/mongo"
 	// "multifileapp/routes"
 	// "net/http"
 	// "github.com/gorilla/mux"
@@ -22,5 +25,11 @@ func main() {
 
 }
 func checkDBConnection() {
-	config.ConnectDB()
+	var DB *mongo.Client = config.ConnectDB()
+	myCollection := GetCollection(DB, "products")
+	fmt.Println(myCollection)
+}
+func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	collection := client.Database("productdb").Collection(collectionName)
+	return collection
 }

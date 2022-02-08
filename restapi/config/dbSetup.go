@@ -19,7 +19,7 @@ func ConnectDB() *mongo.Client {
 	fmt.Println("Database getting connected")
 	//Set the context to run the client in the background
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	
+
 	//Connect the client and run the background
 	err = client.Connect(ctx)
 	if err != nil {
@@ -34,3 +34,11 @@ func ConnectDB() *mongo.Client {
 
 	return client
 }
+var DB *mongo.Client = ConnectDB()
+
+//getting database collections
+func GetCollection(client *mongo.Client, collectionName string) *mongo.Collection {
+	collection := client.Database("productsdb").Collection(collectionName)
+	return collection
+}
+
