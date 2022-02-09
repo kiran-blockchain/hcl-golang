@@ -14,7 +14,6 @@ import (
 	"os"
 	"os/signal"
 	"time"
-
 	"github.com/gorilla/websocket"
 )
 
