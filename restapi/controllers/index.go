@@ -62,6 +62,36 @@ func InsertProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 }
+func UpdateProduct(w http.ResponseWriter, r *http.Request) {
+	var product models.Product
+
+	if err := json.NewDecoder(r.Body).Decode(&product); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		response := models.UserResponse{Status: http.StatusBadRequest, Message: "error", Data: map[string]interface{}{"data": err.Error()}}
+		json.NewEncoder(w).Encode(response)
+		return
+	} else {
+		fmt.Println(product)
+		err := updateProduct(config.DB, "products", product)
+		if err != nil {
+			w.WriteHeader(http.StatusOK)
+			response := models.UserResponse{Status: http.StatusOK,
+				Message: "Unable to Save the data",
+				Data:    map[string]interface{}{"data": err}}
+			json.NewEncoder(w).Encode(response)
+			return
+		}
+
+		//stroe the data to the database
+		w.WriteHeader(http.StatusOK)
+		response := models.UserResponse{Status: http.StatusOK,
+			Message: "Saved Successfuly",
+			Data:    map[string]interface{}{"data": ""}}
+		json.NewEncoder(w).Encode(response)
+		return
+	}
+
+}
 
 func getProducts(client *mongo.Client, collectionName string) []models.Product {
 	//Create the context for fetching the data
@@ -117,4 +147,34 @@ func insertProduct(client *mongo.Client, collectionName string, product models.P
 	fmt.Println(result.InsertedID)
 	return nil
 
+}
+
+func updateProduct(client *mongo.Client, collectionName string, product models.Product) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	//incase of timeout or error  cancel the context
+	defer cancel()
+	productToUpdate := models.Product{
+		Id:          product.Id,
+		Name:        product.Name,
+		Title:       product.Title,
+		Description: product.Description,
+		Price:       product.Price,
+		Qty:         product.Qty,
+	}
+
+	update := bson.M{
+		"qty":         productToUpdate.Qty,
+		"name":        productToUpdate.Name,
+		"title":       productToUpdate.Title,
+		"price":       productToUpdate.Price,
+		"description": productToUpdate.Description,
+	}
+
+	result, err := productCollection.UpdateOne(ctx, bson.M{"id": productToUpdate.Id}, bson.M{"$set": update})
+
+	if err != nil {
+		return err
+	}
+	fmt.Println(result)
+	return nil
 }

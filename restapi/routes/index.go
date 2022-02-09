@@ -17,4 +17,5 @@ func Routes(router *mux.Router) {
 	*/
 	router.HandleFunc("/api/getProducts", controllers.GetProducts).Methods("GET")
 	router.HandleFunc("/api/addProduct", controllers.InsertProduct).Methods("POST")
+	router.HandleFunc("/api/updateProduct", controllers.UpdateProduct).Methods("POST")
 }
