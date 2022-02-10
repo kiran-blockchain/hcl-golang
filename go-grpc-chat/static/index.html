@@ -159,14 +159,14 @@
     }
 
     (function() {
-      let username = prompt("Welcome to this chat, please enter the username you wish to use.")
+      //let username = prompt("Welcome to this chat, please enter the username you wish to use.")
       const socket = setupWebSocketConnection();
       renderMessages();
       document.getElementById("new-message-content")
         .addEventListener("keydown", function(e) {
           if(e.key === "Enter") {
             e.preventDefault();
-            sendMessage(socket, username);
+            sendMessage(socket, "Kiran");
           }
         })
     })();
