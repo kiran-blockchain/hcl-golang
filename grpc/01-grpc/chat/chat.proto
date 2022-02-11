@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package grpcdemo;
+option go_package = "./grpcdemo";
+
+message Message {
+  string body = 1;
+}
+
+service ChatService {
+  rpc SayHello(Message) returns (Message) {}
+}

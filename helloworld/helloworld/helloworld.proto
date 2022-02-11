@@ -25,6 +25,12 @@ package helloworld;
 service Greeter {
   // Sends a greeting
   rpc SayHello (HelloRequest) returns (HelloReply) {}
+
+  //extending service with few more methods
+  rpc CreateStream (Connect) returns (stream Message);
+
+  //boradcast the message
+  rpc BroadcastMessage(Message) return (Close)
 }
 
 // The request message containing the user's name.
@@ -36,3 +42,21 @@ message HelloRequest {
 message HelloReply {
   string message = 1;
 }
+
+message User {
+  string id =1;
+  string display_name=2;
+}
+
+message Message {
+  string id =1;
+  User user = 2;
+  string message =3;
+  string timestamp =4;
+}
+
+message connect {
+  User user =1;
+  boo active =2
+}
+message Close{}
