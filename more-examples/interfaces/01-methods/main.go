@@ -8,18 +8,19 @@
 
 package main
 
+
 func main() {
-	mobydick := book{
+	mobydick := Book{
 		title: "moby dick",
 		price: 10,
 	}
 
-	minecraft := game{
+	minecraft := Game{
 		title: "minecraft",
 		price: 20,
 	}
 
-	tetris := game{
+	tetris := Game{
 		title: "tetris",
 		price: 5,
 	}

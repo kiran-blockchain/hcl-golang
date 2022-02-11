@@ -10,14 +10,15 @@ package main
 
 import "fmt"
 
-type book struct {
-	title string
-	price float64
+type Book struct {
+	Title string
+	Price float64
 }
 
-func (b book) print() {
+func (b Book) print() {
 	// b is a copy of the original `book` value here.
-	fmt.Printf("%-15s: $%.2f\n", b.title, b.price)
+	//fmt.Printf("%-15s: $%.2f\n", b.Title, b.Price)
+	fmt.Println("xxx")
 }
 
 // ----------------------------------------------------------------------------
